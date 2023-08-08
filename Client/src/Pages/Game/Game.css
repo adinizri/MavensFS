@@ -1,0 +1,13 @@
+.game_container{
+    height: 80vh;
+    display: flex;
+}
+.game_container .side{
+height: 100%;
+    width: 100%;
+    display: inline-block;
+    border-bottom: 1px black solid
+}
+.spliter{
+    border-left: 1px black solid;
+}

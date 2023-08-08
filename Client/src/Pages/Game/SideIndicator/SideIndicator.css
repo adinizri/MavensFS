@@ -1,0 +1,9 @@
+.side_indicator{
+    background-color: black;
+        border-radius: 50px;
+        width: 10vh;
+        height: 10vh;
+        position: absolute;
+        top: 20%;
+    
+}
