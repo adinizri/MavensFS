@@ -1,4 +1,4 @@
-import "Side.css";
+import "./Side.css";
 import SideIndicator from "./SideIndicator/SideIndicator";
 interface IProps {
   side: string;
