@@ -3,12 +3,15 @@ import SideIndicator from "./SideIndicator/SideIndicator";
 interface IProps {
   side: string;
   selectedSide: boolean;
+  showIndicator: boolean;
 }
 
-export default function Side({ side, selectedSide }: IProps) {
+export default function Side({ side, selectedSide, showIndicator }: IProps) {
   return (
     <div className={`side ${side === "right" ? "spliter" : ""}`}>
-      {selectedSide && <SideIndicator side={side}></SideIndicator>}
+      {showIndicator && selectedSide && (
+        <SideIndicator side={side}></SideIndicator>
+      )}
     </div>
   );
 }

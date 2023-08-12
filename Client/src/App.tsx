@@ -16,7 +16,7 @@ function App() {
   //   alert(username)},[username])
   const router = createBrowserRouter([
     {
-      path: "/HomePage",
+      path: "/",
       element: <HomePage setUsername={setUsername}></HomePage>,
     },
     {
