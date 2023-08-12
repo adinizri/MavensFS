@@ -1,6 +1,15 @@
+import { IUserReaction } from "./Interfaces/UserReaction.type";
+
+
 export enum GameSides {
     Left=0,
     Right=1
+}
+export enum userReactionIds {
+    tooSoon=0,
+    wrongKey=1,
+    tooLate=2,
+    success=3
 }
 
 export const sideDivs = ["left", "right"];
