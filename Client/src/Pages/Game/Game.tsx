@@ -9,12 +9,13 @@ import {
 } from "../../Consts";
 import Side from "./Side/Side";
 import { useEffect, useRef, useState } from "react";
+import ResultMsg from "./ResultMsg/ResultMsg";
 
 export default function Game() {
   const [selectedSide, setSelectedSide] = useState<string>(); //the selected side
   const [userReaction, setUserReaction] = useState<IReactionType>(); //the user reaction
   const [showIndicator, setShowIndicator] = useState<boolean>(false);
-  const [isKeyPressed, setIsKeyPressed] = useState<boolean>(false);
+  const isKeyPressedRef =useRef(false);
   const showIndicatorRef = useRef(showIndicator);
   showIndicatorRef.current = showIndicator;
   const selectedSideRef = useRef(selectedSide);
@@ -31,7 +32,7 @@ export default function Game() {
   }, []);
 
   const startGame = () => {
-    userReaction && alert(userReaction.message);
+    isKeyPressedRef.current=(false)
     setShowIndicator(false);
     isInTimeRef.current = false;
     const randomSide = Math.round(Math.random() * 1); //random 0 or 1 that indicate the side index
@@ -42,12 +43,18 @@ export default function Game() {
     setTimeout(() => {
       setShowIndicator(true);
       isInTimeRef.current = true;
-      setTimeout(() => (isInTimeRef.current = false), 1000);
+      setTimeout(() => {(isInTimeRef.current = false);
+        if(!isKeyPressedRef.current){ 
+          startGame();
+           setUserReaction(userReactionOptions[userReactionIds.tooLate])}}
+      
+      , 1000);
     }, randomWaitingTime);
   };
 
   //key press handler
   const handleKeyDown = (event: KeyboardEvent) => {
+    isKeyPressedRef.current=(true)
     // im using ref because I want to pass the event listener the current value
     if (showIndicatorRef.current) {
       const isCorrectKey =
@@ -58,6 +65,7 @@ export default function Game() {
       if (isCorrectKey) {
         if (isInTimeRef.current) {
           setUserReaction(userReactionOptions[userReactionIds.success]);
+          
         } else {
           setUserReaction(userReactionOptions[userReactionIds.tooLate]);
         }
@@ -71,7 +79,7 @@ export default function Game() {
     startGame();
   };
 
-  return (
+  return (<>
     <div className='game_container'>
       {sideDivs.map((side) => {
         return (
@@ -83,5 +91,6 @@ export default function Game() {
         );
       })}
     </div>
+   {userReaction&& <ResultMsg message={userReaction?.message}></ResultMsg>}</>
   );
 }
