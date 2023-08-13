@@ -1,4 +1,3 @@
-import SideIndicator from "./Side/SideIndicator/SideIndicator";
 import { IReactionType } from "../../Interfaces/ReactionType.type";
 import "./Game.css";
 import {
@@ -9,52 +8,61 @@ import {
 } from "../../Consts";
 import Side from "./Side/Side";
 import { useEffect, useRef, useState } from "react";
-import ResultMsg from "./ResultMsg/ResultMsg";
+import FeedbackMessage from "./FeedbackMessage/FeedbackMessage";
 
 export default function Game() {
   const [selectedSide, setSelectedSide] = useState<string>(); //the selected side
-  const [userReaction, setUserReaction] = useState<IReactionType>(); //the user reaction
   const [showIndicator, setShowIndicator] = useState<boolean>(false);
-  const isKeyPressedRef =useRef(false);
-  const showIndicatorRef = useRef(showIndicator);
-  showIndicatorRef.current = showIndicator;
-  const selectedSideRef = useRef(selectedSide);
-  selectedSideRef.current = selectedSide;
-  const isInTimeRef = useRef(false);
+  const [gamesPlayedCounter, setGamePlayedCounter] = useState(0);
+
+  const isKeyPressedRef = useRef(false);
+  const showIndicatorRef = useRef(showIndicator); //to get access to the showIndicator state in the event listener
+  const selectedSideRef = useRef(selectedSide); //to get access to the selectedSide state in the event listener
+  const userReactionRef = useRef<IReactionType>(); //saving the user reaction in a ref for update it without a render
+
+  showIndicatorRef.current = showIndicator; //setting it after render
+  selectedSideRef.current = selectedSide; //setting it after render
+
+  const randomSide = Math.round(Math.random() * 1); //random 0 or 1 that indicate the side index
+  const randomWaitingTime = Math.floor(Math.random() * (5000 - 2000) + 2000); // Random time between 2 to 5 seconds in milliseconds
 
   useEffect(() => {
-    startGame();
+    isKeyPressedRef.current = false;
+    setShowIndicator(false);
+    setSelectedSide(sideDivs[randomSide]);
+    const waitingTimer = setTimeout(() => {
+      setShowIndicator(true);
+
+      const showTimer = setTimeout(
+        () => {
+          setGamePlayedCounter((prevCounter) => prevCounter + 1);
+          console.log(gamesPlayedCounter);
+          setShowIndicator(false);
+          if (!isKeyPressedRef.current) {
+            userReactionRef.current =
+              userReactionOptions[userReactionIds.tooLate];
+          }
+        },
+
+        1000
+      );
+      return () => clearTimeout(showTimer);
+    }, randomWaitingTime);
+
     //handling key press
-    window.addEventListener("keydown", handleKeyDown); //create event listener on component mounting
     return () => {
-      window.removeEventListener("keydown", handleKeyDown); //remove event listener on component unmount
+      clearTimeout(waitingTimer);
     };
+  }, [gamesPlayedCounter]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress); //create event listener on component mounting
+    return () => window.removeEventListener("keydown", handleKeyPress); //remove event listener on component unmount
   }, []);
 
-  const startGame = () => {
-    isKeyPressedRef.current=(false)
-    setShowIndicator(false);
-    isInTimeRef.current = false;
-    const randomSide = Math.round(Math.random() * 1); //random 0 or 1 that indicate the side index
-    setSelectedSide(sideDivs[randomSide]);
-
-    const randomWaitingTime = Math.floor(Math.random() * (5000 - 2000) + 2000); // Random time between 2 to 5 seconds in milliseconds
-
-    setTimeout(() => {
-      setShowIndicator(true);
-      isInTimeRef.current = true;
-      setTimeout(() => {(isInTimeRef.current = false);
-        if(!isKeyPressedRef.current){ 
-          startGame();
-           setUserReaction(userReactionOptions[userReactionIds.tooLate])}}
-      
-      , 1000);
-    }, randomWaitingTime);
-  };
-
   //key press handler
-  const handleKeyDown = (event: KeyboardEvent) => {
-    isKeyPressedRef.current=(true)
+  const handleKeyPress = (event: KeyboardEvent) => {
+    isKeyPressedRef.current = true;
     // im using ref because I want to pass the event listener the current value
     if (showIndicatorRef.current) {
       const isCorrectKey =
@@ -62,35 +70,34 @@ export default function Game() {
           ? selectedSideRef.current === sideDivs[GameSides.Left]
           : selectedSideRef.current === sideDivs[GameSides.Right];
 
-      if (isCorrectKey) {
-        if (isInTimeRef.current) {
-          setUserReaction(userReactionOptions[userReactionIds.success]);
-          
-        } else {
-          setUserReaction(userReactionOptions[userReactionIds.tooLate]);
-        }
-      } else {
-        setUserReaction(userReactionOptions[userReactionIds.wrongKey]);
-      }
+      isCorrectKey
+        ? (userReactionRef.current =
+            userReactionOptions[userReactionIds.success])
+        : (userReactionRef.current =
+            userReactionOptions[userReactionIds.wrongKey]);
     } else {
-      setUserReaction(userReactionOptions[userReactionIds.tooSoon]);
+      userReactionRef.current = userReactionOptions[userReactionIds.tooSoon];
     }
-
-    startGame();
   };
 
-  return (<>
-    <div className='game_container'>
-      {sideDivs.map((side) => {
-        return (
-          <Side
-            showIndicator={showIndicator}
-            key={side}
-            side={side}
-            selectedSide={selectedSide === side}></Side>
-        );
-      })}
-    </div>
-   {userReaction&& <ResultMsg message={userReaction?.message}></ResultMsg>}</>
+  return (
+    <>
+      <div className='game_container'>
+        {sideDivs.map((side) => {
+          return (
+            <Side
+              showIndicator={showIndicator}
+              key={side}
+              side={side}
+              selectedSide={selectedSide === side}></Side>
+          );
+        })}
+      </div>
+      {userReactionRef.current && !showIndicator && (
+        <FeedbackMessage
+          userReaction={userReactionRef.current}
+          gameCounter={gamesPlayedCounter}></FeedbackMessage>
+      )}
+    </>
   );
 }
