@@ -9,7 +9,7 @@ interface IProps {
 export default function FeedbackMessage({ userReaction, gameCounter }: IProps) {
   return (
     <h1
-      className='Message'
+      className='Feedback_Message'
       style={{ color: userReaction.type === "Mistake" ? "red" : "green" }}>
       {`Game number ${gameCounter} result: ${userReaction.message}`}
     </h1>

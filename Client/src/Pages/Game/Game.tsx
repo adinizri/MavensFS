@@ -30,28 +30,23 @@ export default function Game() {
     isKeyPressedRef.current = false;
     setShowIndicator(false);
     setSelectedSide(sideDivs[randomSide]);
-    const waitingTimer = setTimeout(() => {
+    const waitingModeTimer = setTimeout(() => {
       setShowIndicator(true);
 
-      const showTimer = setTimeout(
-        () => {
-          setGamePlayedCounter((prevCounter) => prevCounter + 1);
-          console.log(gamesPlayedCounter);
-          setShowIndicator(false);
-          if (!isKeyPressedRef.current) {
-            userReactionRef.current =
-              userReactionOptions[userReactionIds.tooLate];
-          }
-        },
+      const showIndicatorTimer = setTimeout(() => {
+        setGamePlayedCounter((prevCounter) => prevCounter + 1);
+        setShowIndicator(false);
+        if (!isKeyPressedRef.current) {
+          userReactionRef.current =
+            userReactionOptions[userReactionIds.tooLate];
+        }
+      }, 1000);
 
-        1000
-      );
-      return () => clearTimeout(showTimer);
+      return () => clearTimeout(showIndicatorTimer);
     }, randomWaitingTime);
 
-    //handling key press
     return () => {
-      clearTimeout(waitingTimer);
+      clearTimeout(waitingModeTimer);
     };
   }, [gamesPlayedCounter]);
 
@@ -63,6 +58,7 @@ export default function Game() {
   //key press handler
   const handleKeyPress = (event: KeyboardEvent) => {
     isKeyPressedRef.current = true;
+
     // im using ref because I want to pass the event listener the current value
     if (showIndicatorRef.current) {
       const isCorrectKey =

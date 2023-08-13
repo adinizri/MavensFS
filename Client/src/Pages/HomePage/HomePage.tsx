@@ -26,10 +26,16 @@ export default function HomePage(props: HomePageProps) {
         <h1 className='HomePage_title'>How Fast are you?</h1>
         <div className='login_container'>
           <input
+            className='Login_input'
+            type='text'
             value={usernameValue}
             placeholder='Enter username'
             onChange={handleUsernameInputChange}></input>
-          <button onClick={onClickStart}>Start</button>
+          <button
+            className='login_button'
+            onClick={onClickStart}>
+            Start
+          </button>
         </div>
       </div>
     </div>
