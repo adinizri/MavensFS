@@ -1,9 +1,9 @@
 // Import the express in typescript file
-import express from 'express';
+import express, { NextFunction } from 'express';
 import user from './Routes/userRout.ts'
 import cors from 'cors';
+import { error } from 'console';
 
-const apiPath="/api"
 // Initialize the express engine
 const app: express.Application = express();
 
@@ -12,10 +12,19 @@ const port: number = 5000;
 app.use(cors());
 app.use(express.json());
 // Handling '/' Request
-app.get(apiPath+'/', (req, res) => {
+app.get('/', (req, res) => {
 	res.send("TypeScript With Express");
 });
-app.use(apiPath+"/user",user)
+app.use("/user",user)
+
+// app.use((error:unknown,req:Request,res:Response,next:NextFunction)=>{
+// 	console.log(error);
+// 	let errorMassage=`An error occurred: ${error}`;
+// 	let statusCode=500;
+// 	if(error instanceof HttpError){
+// 		statusCode=error.status
+// 	}
+// })
 
 // Server setup
 app.listen(port, () => {

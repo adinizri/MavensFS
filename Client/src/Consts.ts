@@ -1,5 +1,6 @@
 import { IUserReaction } from "./Interfaces/UserReaction.type";
 
+export const serverAdress="http://localhost:5000";
 
 export enum GameSides {
     Left=0,

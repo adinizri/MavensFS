@@ -21,7 +21,7 @@ function App() {
     },
     {
       path: "/Game",
-      element: <Game></Game>,
+      element: <Game username={username}></Game>,
     },
   ]);
   return (
