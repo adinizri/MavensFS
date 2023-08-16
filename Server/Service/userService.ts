@@ -1,25 +1,9 @@
 import fs from "fs";
-import path, { resolve } from "path";
+import path from "path";
 import BasicUserModel from "../Models/BasicUser";
 import axios from "axios";
-import { rejects } from "assert";
-import { promises } from "dns";
 
 const USERS_DB_PATH = path.join(__dirname, "..", "DB", "users.json"); // Construct the full path
-
-//return the user index in the jsons array if exist
-export const isUserExist = (username: string): Promise<number> => {
-  return new Promise(async (resolve, reject) => {
-    let dbData = await fs.promises.readFile(USERS_DB_PATH, "utf8");
-    const users: BasicUserModel[] = dbData ? JSON.parse(dbData) : [];
-    try {
-      const userIndex = users.findIndex((user) => user.username === username);
-      resolve(userIndex);
-    } catch (error) {
-      return reject(error);
-    }
-  });
-};
 
 //get the users array from the json file
 export const getUsersFromDb = async () => {
@@ -31,6 +15,15 @@ export const getUsersFromDb = async () => {
     console.error("Error updating/creating user:", error);
     return error;
   }
+};
+
+//return the user index in the jsons array if exist
+export const isUserExist = (
+  username: string,
+  users: BasicUserModel[]
+): number => {
+  const userIndex = users.findIndex((user) => user.username === username);
+  return userIndex;
 };
 
 //get the user Fake Data
@@ -72,10 +65,10 @@ export const updateOrCreatUser = (
   return new Promise<{ message: string; statusCode: number }>(
     async (resolve, reject) => {
       try {
-        let statusCode = 200;
+        let statusCode = 200; //create status
         let massege = "user added";
-        const userIndex = await isUserExist(userGameData.username);
         let users = (await getUsersFromDb()) as BasicUserModel[];
+        const userIndex = isUserExist(userGameData.username, users);
         //if user exist in the DB
         if (userIndex > -1 && users) {
           const user = users[userIndex];
@@ -98,13 +91,4 @@ export const updateOrCreatUser = (
       }
     }
   );
-};
-
-const insertOrUpdateDb = async (data: string): Promise<boolean> => {
-  try {
-    await fs.promises.writeFile(USERS_DB_PATH, data, "utf8");
-    return true;
-  } catch (error) {
-    return false;
-  }
 };
