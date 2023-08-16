@@ -22,16 +22,17 @@ export default function Game({ username }: IProps) {
   const [gamesWonCounter, setGamesWonCounter] = useState(0);
   const showIndicatorRef = useRef(showIndicator); //to get access to the showIndicator state in the event listener
   const selectedSideRef = useRef(selectedSide); //to get access to the selectedSide state in the event listener
-  const gamesWonRef = useRef(gamesWonCounter); //using ref to access the data in the post request
-  const gamesPlayedRef = useRef(gamesPlayedCounter); //using ref to access the data in the post request
+  const gamesWonCounterRef = useRef(gamesWonCounter); //using ref to access the data in the post request
+  const gamesPlayedCounterRef = useRef(gamesPlayedCounter); //using ref to access the data in the post request
   const userReactionRef = useRef<IReactionType>(); //saving the user reaction in a ref for update it without a render
+  const isKeyPressedRef = useRef(false); //check if the user press a key
   showIndicatorRef.current = showIndicator; //setting it after render
   selectedSideRef.current = selectedSide; //setting it after render
-  gamesWonRef.current = gamesWonCounter;
-  gamesPlayedRef.current = gamesPlayedCounter;
+
+  gamesWonCounterRef.current = gamesWonCounter;
+  gamesPlayedCounterRef.current = gamesPlayedCounter;
   const randomSide = Math.round(Math.random() * 1); //random 0 or 1 that indicate the side index
   const randomWaitingTime = Math.floor(Math.random() * (5000 - 2000) + 2000); // Random time between 2 to 5 seconds in milliseconds
-  const isKeyPressedRef = useRef(false); //check if the user press a key
 
   // the initail useEffect to set the event listener once and remove it when dont need
   useEffect(() => {
@@ -80,8 +81,8 @@ export default function Game({ username }: IProps) {
       axios
         .put(`${serverAdress}/user`, {
           username: username,
-          gamesPlayed: gamesPlayedRef.current,
-          gamesWon: gamesWonRef.current,
+          gamesPlayed: gamesPlayedCounterRef.current,
+          gamesWon: gamesWonCounterRef.current,
         })
         .then((response) => console.log(response))
         .catch((err) => console.log(err));

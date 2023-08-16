@@ -8,10 +8,8 @@ interface IProps {
 
 export default function Side({ side, selectedSide, showIndicator }: IProps) {
   return (
-    <div className={`side ${side === "right" ? "spliter" : ""}`}>
-      {showIndicator && selectedSide && (
-        <SideIndicator side={side}></SideIndicator>
-      )}
+    <div className={`side ${side === "right" && "spliter"}`}>
+      {showIndicator && selectedSide && <SideIndicator></SideIndicator>}
     </div>
   );
 }

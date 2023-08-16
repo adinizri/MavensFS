@@ -1,19 +1,15 @@
-.HomePage_container{
-display: flex;
-    justify-content: center;
-    /* Center horizontally */
-    align-items: center;
-    /* Center vertically */
-    height: 50vh;
-    /* Use the full viewport height */
-}
+
 .HomePage_title{
 padding-bottom: 5vh;
 }
 
 .HomePage{
+  
     display: flex;
-    flex-direction: column;
+        flex-direction: column;
+        height: 49%;
+        /* width: 100%; */
+        align-items: center;
 
 }
 
@@ -21,6 +17,7 @@ padding-bottom: 5vh;
 
         display: flex;
         flex-direction: column;
+        width: 13%;
 }
 
 .Login_input {
