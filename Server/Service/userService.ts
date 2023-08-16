@@ -12,7 +12,7 @@ const getUsersFromDb = async () => {
     const users: any[] = data ? JSON.parse(data) : [];
     return users;
   } catch (error) {
-    console.error("Error updating/creating user:", error);
+    console.error("Error by fetching users data:", error);
     return error;
   }
 };
@@ -34,20 +34,18 @@ const getUserFakeData = async (userGameData: BasicUserModel): Promise<any> => {
         `https://api.genderize.io?name=${username}`
       );
       const probability = genderResult.data.probability;
-      if (probability > 0.95) gender = genderResult.data.gender;
-
-      if (gender != "undetermined") {
-        const fakeData = await axios.get(
+      let additionalData: JSON = JSON.parse(`{"gender":"undetermined"}`);
+      if (probability > 0.95) {
+        gender = genderResult.data.gender;
+        const userFakeData = await axios.get(
           `https://randomuser.me/api/?gender=${gender}`
         );
-        if (fakeData.data.results[0]) {
-          userData = { ...userGameData, ...fakeData.data.results[0] };
-          resolve(userData);
+        if (userFakeData.data.results[0]) {
+          additionalData = userFakeData.data.results[0];
         }
-      } else {
-        userData = { ...userGameData, ...{ gender: gender } };
-        resolve(userData);
       }
+      userData = { ...userGameData, ...additionalData };
+      resolve(userData);
     } catch (error) {
       reject(`An error occurred ${error}`);
     }
@@ -66,7 +64,7 @@ export const updateOrCreatUser = (
         let users = (await getUsersFromDb()) as BasicUserModel[];
         const userIndex = isUserExist(userGameData.username, users);
         //if user exist in the DB
-        if (userIndex > -1 && users) {
+        if (userIndex > -1) {
           const user = users[userIndex];
           if (user) {
             user.gamesPlayed += userGameData.gamesPlayed;
