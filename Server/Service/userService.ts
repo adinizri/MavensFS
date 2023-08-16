@@ -3,7 +3,7 @@ import path from "path";
 import BasicUserModel from "../Models/BasicUser";
 import axios from "axios";
 
-const USERS_DB_PATH = path.join(__dirname, "..", "DB", "users.json"); // Construct the full path
+const USERS_DB_PATH = path.join(__dirname, "../..", "DB", "users.json"); // Construct the full path
 
 //get the users array from the json file
 export const getUsersFromDb = async () => {
@@ -31,7 +31,7 @@ export const getUserFakeData = async (
   userGameData: BasicUserModel
 ): Promise<any> => {
   let username = userGameData.username;
-  let gender: string | undefined = undefined; //the user gender
+  let gender: string = "undetermined"; //the user gender
   let userData: any = {}; // the userData
   return new Promise(async (resolve, reject) => {
     try {
@@ -41,7 +41,7 @@ export const getUserFakeData = async (
       const probability = genderResult.data.probability;
       if (probability > 0.95) gender = genderResult.data.gender;
 
-      if (gender) {
+      if (gender != "undetermined") {
         const fakeData = await axios.get(
           `https://randomuser.me/api/?gender=${gender}`
         );
@@ -82,7 +82,7 @@ export const updateOrCreatUser = (
           const user = await getUserFakeData(userGameData);
           users.push(user);
         }
-        // await insertOrUpdateDb(JSON.stringify(users));
+
         await fs.promises.writeFile(USERS_DB_PATH, JSON.stringify(users));
         resolve({ message: massege, statusCode: statusCode });
       } catch (error) {
