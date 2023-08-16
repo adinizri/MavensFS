@@ -1,6 +1,6 @@
 import express, { response } from "express";
 import axios from "axios";
-import { updateOrCreatUser } from "../Service/userService";
+import { getLeaderboard, updateOrCreatUser } from "../Service/userService";
 import BasicUserModel from "../Models/BasicUser";
 import { log } from "console";
 const router = express.Router();
@@ -21,6 +21,13 @@ router.put("/", async function (req, res) {
   }
 });
 
-router.get("/leaderboard", async (req, res) => {});
+router.get("/leaderboard", async (req, res) => {
+  try {
+    const leaderboard = await getLeaderboard();
+    res.send(leaderboard);
+  } catch (error) {
+    res.send(error);
+  }
+});
 
 export default router;

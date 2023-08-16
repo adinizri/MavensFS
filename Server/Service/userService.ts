@@ -6,7 +6,7 @@ import axios from "axios";
 const USERS_DB_PATH = path.join(__dirname, "../..", "DB", "users.json"); // Construct the full path
 
 //get the users array from the json file
-export const getUsersFromDb = async () => {
+const getUsersFromDb = async () => {
   try {
     const data = await fs.promises.readFile(USERS_DB_PATH, "utf8");
     const users: any[] = data ? JSON.parse(data) : [];
@@ -18,18 +18,13 @@ export const getUsersFromDb = async () => {
 };
 
 //return the user index in the jsons array if exist
-export const isUserExist = (
-  username: string,
-  users: BasicUserModel[]
-): number => {
+const isUserExist = (username: string, users: BasicUserModel[]): number => {
   const userIndex = users.findIndex((user) => user.username === username);
   return userIndex;
 };
 
 //get the user Fake Data
-export const getUserFakeData = async (
-  userGameData: BasicUserModel
-): Promise<any> => {
+const getUserFakeData = async (userGameData: BasicUserModel): Promise<any> => {
   let username = userGameData.username;
   let gender: string = "undetermined"; //the user gender
   let userData: any = {}; // the userData
@@ -59,6 +54,7 @@ export const getUserFakeData = async (
   });
 };
 
+//update user if he exist and create it if not
 export const updateOrCreatUser = (
   userGameData: BasicUserModel
 ): Promise<{ message: string; statusCode: number }> => {
@@ -92,3 +88,9 @@ export const updateOrCreatUser = (
     }
   );
 };
+
+export async function getLeaderboard() {
+  let users = (await getUsersFromDb()) as BasicUserModel[];
+  users.sort((a, b) => b.gamesWon - a.gamesWon);
+  return users;
+}
